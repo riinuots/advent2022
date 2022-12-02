@@ -37,9 +37,9 @@ game_results2 = tribble(~me_code,   ~result,    ~points_winning,
 
 me_toplay = crossing(elf_real = c("🪨", "🧻", "✂️"),
                       result  = c("Lose", "Draw", "Win")) %>% 
-  mutate(me_real = c("🧻", "🪨", "✂️",
-                     "🪨", "✂️", "🧻",
-                     "✂️", "🧻", "🪨"))
+  mutate(me_real = c("✂️", "🧻", "🪨",
+                     "🧻", "🪨", "✂️",
+                     "🪨", "✂️", "🧻"))
 
 input_orig %>% 
   left_join(elf_playing) %>% 
