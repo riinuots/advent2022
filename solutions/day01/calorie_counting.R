@@ -1,11 +1,10 @@
 library(tidyverse)
-library(scales)
-theme_set(theme_bw())
 
-# Part I
 input_orig = read_csv("solutions/day01/input",
                       col_names = "calories",
                       skip_empty_rows = FALSE)
+
+# Part I
 calories = input_orig %>% 
   rowid_to_column() %>% 
   mutate(elf_rowid = if_else(is.na(calories), paste("elf", rowid), NA_character_)) %>% 
