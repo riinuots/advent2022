@@ -17,6 +17,7 @@ stacks = read_lines("solutions/day05/input")[1:8] %>%
 instructions = read_lines("solutions/day05/input", skip = 10) %>% 
   unglue_data("move {n} from {from} to {to}", convert = TRUE)
 
+# Parts I and II
 stacks_mod = stacks
 is_part2 = TRUE
 for (i in 1:nrow(instructions)){
