@@ -24,11 +24,16 @@ items = items_monkeys %>%
 monkeys = items_monkeys %>% 
   distinct(monkey, op, op_n, div, div1, div2)
 
-monkey_handles = vector("list", nrow(monkeys))
+monkey_handles = as.list(rep(0, nrow(monkeys)))
 
+magic = prod(monkeys$div)
+
+# Parts I and II
 start = Sys.time()
-for (round in 1:20){
-  #print(paste("round:", round))
+for (round in 1:10000){
+  if (round %% 100 == 0){
+    print(paste("round:", round))
+  }
   for (mymonkey in unique(monkeys$monkey)){
     #mymonkey = 3
     #print(paste("monkey:", mymonkey))
@@ -36,13 +41,18 @@ for (round in 1:20){
       left_join(monkeys, by = "monkey")
     if (nrow(m_items) == 0){next}
     rem_items = filter(items, monkey != mymonkey)
-    monkey_handles[[mymonkey]] = c(monkey_handles[[mymonkey]], nrow(m_items))
+    monkey_handles[[mymonkey]] = monkey_handles[[mymonkey]] + nrow(m_items)
     
     items = bind_rows(rem_items,
                       m_items %>% 
                         mutate(op_n = if_else(is.na(op_n), as.numeric(old), op_n)) %>% 
-                        rowwise() %>% 
-                        mutate(new = floor((get(op)(old, op_n))/3)) %>% 
+                        rowwise() %>% # bc get() is not vectorised
+                        # Part I
+                        # mutate(new = floor((get(op)(old, op_n))/3)) %>% 
+                        #Part II
+                        mutate(new = get(op)(old, op_n)) %>%
+                        ungroup() %>% 
+                        mutate(new = new %% magic) %>% 
                         mutate(monkey = if_else(new %% div == 0, div1, div2)) %>% 
                         select(monkey, old = new)
     )
@@ -50,11 +60,14 @@ for (round in 1:20){
 }
 
 
-
 monkey_handles %>% 
-  map_dbl(~sum(.x)) %>% 
-  sort() %>% 
-  tail(2) %>% 
-  prod()
+  unlist() %>% 
+  sort() %>%
+  tail(2) %>%
+  prod() %>% 
+  print(digits = 10)
 
-Sys.time() - start
+took = Sys.time() - start
+
+# options(pillar.sigfig = 100)
+# items
